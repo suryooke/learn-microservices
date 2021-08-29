@@ -13,7 +13,7 @@ public class UserService {
 	
 	private static List<User> users = new ArrayList<User>();
 	
-	private static int userCount = 3;
+	private static int userCount = 4;
 	
 	static {
 		users.add(new User(1, "Adam", new Date()));
