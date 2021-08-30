@@ -3,8 +3,16 @@ package com.oyo.rest.restfulwebservices.controller.user;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,19 +45,26 @@ public class UserController {
 	
 	//Get user by id
 	@GetMapping("/{id}")
-	public User getById(@PathVariable Integer id) {
+	public EntityModel<User> getById(@PathVariable Integer id) {
 		log.info("GET /user/" + id);
-		User userSearch = userService.UserfindOne(id);
+		User userSearch = userService.userFindById(id);
 		
 		if(userSearch == null)
 			throw new UserNotFoundException("user-id=" + id);
 		
-		return userService.UserfindOne(id);
+		EntityModel<User> model = EntityModel.of(userSearch);
+		
+		WebMvcLinkBuilder linkToUsers = 
+				linkTo(methodOn(this.getClass()).getAllUser());
+		
+		model.add(linkToUsers.withRel("all-users"));
+		
+		return model;
 	}
 	
 	//Post user
 	@PostMapping()
-	public ResponseEntity<User> addUser(@RequestBody User user) {
+	public ResponseEntity<User> addUser( @Valid @RequestBody User user) {
 		log.info("POST /user/");
 		User savedUser = userService.save(user);
 		
@@ -59,6 +74,17 @@ public class UserController {
 			.buildAndExpand(savedUser.getId()).toUri();
 		
 		return ResponseEntity.created(uri).build();
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<User> deleteUser(@PathVariable Integer id) {
+		log.info("DELETE /user/" + id);
+		User userDelete = userService.delete(id);
+		
+		if(userDelete == null)
+			throw new UserNotFoundException("user-id=" + id);
+		
+		return ResponseEntity.ok().build();
 	}
 
 }

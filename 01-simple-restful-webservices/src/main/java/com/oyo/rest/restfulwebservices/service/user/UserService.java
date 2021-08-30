@@ -2,6 +2,7 @@ package com.oyo.rest.restfulwebservices.service.user;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ public class UserService {
 		return users;
 	}
 	
-	public User UserfindOne(Integer id) {
+	public User userFindById(int id) {
 		for (User user : users) {
 			if (user.getId() == id) {
 				return user;
@@ -43,5 +44,17 @@ public class UserService {
 		
 		users.add(user);
 		return user;
+	}
+	
+	public User delete(int id) {
+		Iterator<User> it = users.iterator();
+		while(it.hasNext()) {
+			User user = it.next();
+			if(user.getId() == id) {
+				it.remove();
+				return user;
+			}
+		}
+		return null;
 	}
 }
