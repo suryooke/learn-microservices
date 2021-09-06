@@ -4,13 +4,8 @@ server:
 spring:
   application:
     name: limits-service
-  cloud:
-    config:
-      import-check:
-        enabled: false
----
-
-limits-service:
-  minimum: 12
-  maximum: 30 
+  profiles:
+    active: dev
+  config:
+    import: configserver:http://localhost:8888
  
